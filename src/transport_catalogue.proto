@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package transport_catalogue_serialize;
+
+// DB
+
+enum Root_Type
+{
+    CYCLE = 0;
+    FORWARD = 1;
+}
+
+message Geo
+{
+    double lat = 1;
+    double lng = 2;
+}
+
+message Stop
+{
+    uint64 id = 1;
+    bytes name = 2;
+    Geo coordinates = 3;
+}
+
+message Bus
+{
+    uint64 id = 1;
+    bytes name = 2;
+    repeated uint64 stops = 3;
+    Root_Type root_type = 4;
+}
+
+message StopToStop 
+{
+    uint64 id_from = 1;
+    uint64 id_to = 2;
+    uint32 length = 3;
+}
+
+// Render Settings
+
+message Point
+{
+    double x = 1;
+    double y = 2;
+}
+
+message Color
+{
+    message Rgb
+    {
+        uint32 red = 1;
+        uint32 green = 2;
+        uint32 blue = 3;
+    }
+
+    message Rgba
+    {
+        uint32 red = 1;
+        uint32 green = 2;
+        uint32 blue = 3;
+        double opacity = 4;
+    }
+    
+    oneof color
+    {
+        string string_color = 1;
+        Rgb rgb = 2;
+        Rgba rgba = 3;
+    }
+}
+
+message RenderSettings
+{
+    double width = 1;
+    double height = 2;
+    double padding = 3;
+    double line_width = 4;
+    double stop_radius = 5;
+    double bus_label_font_size = 6;
+    Point bus_label_offset = 7;
+    uint32 stop_label_font_size = 8;
+    Point stop_label_offset = 9;
+    Color underlayer_color = 10;
+    double underlayer_width = 11;
+    repeated Color color_palette = 12;
+}
+
+// Router
+
+message RouterSettings
+{
+    double bus_speed = 1;
+    double bus_wait_time = 2;
+}
+
+message DirectedWeightedGraph
+{
+    message IncidenceList
+    {
+        repeated uint64 edge_id_list = 1;
+    }
+
+    message Edge
+    {
+        uint64 from = 1;
+        uint64 to = 2;
+        double weight = 3;
+    }
+
+    repeated Edge edges = 1;
+    repeated IncidenceList incidence_lists = 2;
+}
+
+message GraphBuilder
+{
+    message EdgeID
+    {
+        bytes name = 1;
+        int32 span_count = 2;
+        double weight = 3;
+    }
+
+    DirectedWeightedGraph graph = 2;
+    repeated EdgeID edgels = 3;
+}
+
+message Router
+{
+    message RouterIternalData
+    {
+        message OptRouterData
+        {
+            message RouterData
+            {
+                message Prev_Edge
+                {
+                    uint64 data = 1;
+                }
+            
+                double weight = 1;
+                Prev_Edge prev_edge = 2;
+            }
+        
+            RouterData data = 1;
+        }
+
+        repeated OptRouterData data_list = 1;
+    }
+
+    repeated RouterIternalData routes_data = 1;
+}
+
+// Main TC
+
+message TransportCatalogue
+{
+    repeated Stop stops = 1;
+    repeated Bus buses = 2;
+    repeated StopToStop length_btw_stops = 3;
+    RenderSettings render_settings = 4;
+    RouterSettings router_settings = 5;
+    GraphBuilder route_builder = 6;
+    Router router = 7;
+}

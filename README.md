@@ -158,7 +158,7 @@
 
 Нужно в директории src создать директорию build и выполнить в ней команды:
 
-cmake .. -DCMAKE_PREFIX_PATH=<абсолютный путь до директории в которой собранная Protobuf> -DCMAKE_BUILD_TYPE=Debug/Release -G "MinGW Makefiles"
+cmake .. -DCMAKE_PREFIX_PATH=<абсолютный путь до директории>\Protobuf -DCMAKE_BUILD_TYPE=Debug/Release -G "MinGW Makefiles"
 
 cmake --build .
 
